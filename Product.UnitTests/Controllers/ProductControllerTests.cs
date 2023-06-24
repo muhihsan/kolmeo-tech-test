@@ -2,6 +2,7 @@
 using API.Model;
 using API.Repositories;
 using Controllers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -21,18 +22,42 @@ namespace UnitTests.Controllers
         }
 
         [Fact]
-        public void GetAll_WhenSuccessful_ShouldReturnAllProducts()
+        public async Task GetAll_WhenSuccessful_ShouldReturnOkAndAllProducts()
         {
             var products = new List<Product>
             {
-                new Product { Id = new Guid(), Name = "Test Name", Description = "Test Description", Price = 5 }
+                new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 }
             };
 
-            _mockProductRepository.Setup(x => x.GetAll()).Returns(products);
+            _mockProductRepository.Setup(x => x.GetAllAsync()).ReturnsAsync(products);
 
-            var results = _controller.GetAll();
+            var result = await _controller.GetAll();
 
-            Assert.Equal(products, results);
+            Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(products, ((OkObjectResult)result).Value);
+        }
+
+        [Fact]
+        public async Task GetById_WhenNotFound_ShouldReturnNotFound()
+        {
+            _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>()));
+
+            var result = await _controller.GetById(Guid.NewGuid());
+
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task GetById_WhenSuccessful_ShouldReturnOkAndProduct()
+        {
+            var product = new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 };
+
+            _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(product);
+
+            var result = await _controller.GetById(Guid.NewGuid());
+
+            Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(product, ((OkObjectResult)result).Value);
         }
     }
 }

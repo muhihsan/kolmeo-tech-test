@@ -4,11 +4,11 @@ namespace API.Repositories
 {
 	public interface IProductRepository
 	{
-		Product Get();
-		IEnumerable<Product> GetAll();
-		Product Create(Product create);
-		Product Update(Product update);
-		void Delete(Guid productId);
+		Task<Product> GetByIdAsync(Guid guid);
+		Task<IEnumerable<Product>> GetAllAsync();
+		Task<Product> CreateAsync(Product create);
+		Task<Product> UpdateAsync(Product update);
+		void DeleteAsync(Guid productId);
 	}
 }
 

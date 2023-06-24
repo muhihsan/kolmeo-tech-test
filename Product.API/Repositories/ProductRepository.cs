@@ -3,33 +3,33 @@ using Microsoft.eShopOnContainers.Services.Catalog.API.Infrastructure;
 
 namespace API.Repositories
 {
-	public class ProductRepository : IProductRepository
-	{
-		public ProductRepository(AppDbContext dbContext)
-		{
-		}
+    public class ProductRepository : IProductRepository
+    {
+        public ProductRepository()
+        {
+        }
 
-        public Product Create(Product create)
+        public Task<Product> CreateAsync(Product create)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(Guid productId)
+        public void DeleteAsync(Guid productId)
         {
             throw new NotImplementedException();
         }
 
-        public Product Get()
+        public Task<Product> GetByIdAsync(Guid guid)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Product> GetAll()
+        public Task<IEnumerable<Product>> GetAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Product Update(Product update)
+        public Task<Product> UpdateAsync(Product update)
         {
             throw new NotImplementedException();
         }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class ProductController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
@@ -17,10 +17,25 @@ public class ProductController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetProducts")]
-    public IEnumerable<Product> GetAll()
+    [HttpGet]
+    [Route("")]
+    public async Task<ActionResult> GetAll()
     {
-        return _productRepository.GetAll();
+        return Ok(await _productRepository.GetAllAsync());
+    }
+
+    [HttpGet]
+    [Route("{id}")]
+    public async Task<ActionResult> GetById(Guid id)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(product);
     }
 }
 
