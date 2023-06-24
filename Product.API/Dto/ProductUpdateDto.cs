@@ -2,8 +2,15 @@
 
 public class ProductUpdateDto
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public int Price { get; set; }
+    public string Name { get; }
+    public string Description { get; }
+    public int Price { get; }
+
+    public ProductUpdateDto(string name, string description, int price)
+    {
+        Name = name;
+        Description = description;
+        Price = price;
+    }
 }
 

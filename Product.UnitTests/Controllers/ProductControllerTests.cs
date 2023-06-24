@@ -76,7 +76,7 @@ public class ProductControllerTests
     [Fact]
     public async Task Update_WhenNotFound_ShouldReturnBadRequest()
     {
-        var productUpdateDto = new ProductUpdateDto { Name = "Test Name", Description = "Test Description", Price = 5 };
+        var productUpdateDto = new ProductUpdateDto("Test Name", "Test Description", 5);
 
         _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>()));
 
@@ -90,7 +90,7 @@ public class ProductControllerTests
     {
         var productId = Guid.NewGuid();
         var product = new Product { Id = productId, Name = "Test Name", Description = "Test Description", Price = 5 };
-        var productUpdateDto = new ProductUpdateDto { Name = "Test New Name", Description = "Test New Description", Price = 10 };
+        var productUpdateDto = new ProductUpdateDto("Test New Name", "Test New Description", 10);
 
         _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(product);
 
