@@ -1,4 +1,5 @@
-﻿using API.Model;
+﻿using API.Dto;
+using API.Model;
 using API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,15 @@ public class ProductController : ControllerBase
         return Ok(await _productRepository.GetAllAsync());
     }
 
+    [HttpPost]
+    [Route("")]
+    public async Task<ActionResult> Create([FromBody] Product product)
+    {
+        var result = await _productRepository.CreateAsync(product);
+
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
     [HttpGet]
     [Route("{id}")]
     public async Task<ActionResult> GetById(Guid id)
@@ -38,13 +48,23 @@ public class ProductController : ControllerBase
         return Ok(product);
     }
 
-    [HttpPost]
-    [Route("")]
-    public async Task<ActionResult> Create([FromBody] Product product)
+    [HttpPut]
+    [Route("{id}")]
+    public async Task<ActionResult> Update(Guid id, [FromBody] ProductUpdateDto productDto)
     {
-        var result = await _productRepository.CreateAsync(product);
+        var product = await _productRepository.GetByIdAsync(id);
 
-        return Ok(result);
+        if (product == null)
+        {
+            return BadRequest();
+        }
+
+        product.Name = productDto.Name;
+        product.Description = productDto.Description;
+        product.Price = productDto.Price;
+
+        await _productRepository.UpdateAsync(product);
+
+        return Ok(product);
     }
 }
-

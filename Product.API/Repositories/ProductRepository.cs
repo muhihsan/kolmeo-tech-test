@@ -1,17 +1,23 @@
 ﻿using API.Infrastructure.Configurations;
 using API.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Repositories;
 
 public class ProductRepository : IProductRepository
 {
+    private AppDbContext _dbContext;
+
     public ProductRepository(AppDbContext dbContext)
     {
+        _dbContext = dbContext;
     }
 
-    public Task<Product> CreateAsync(Product create)
+    public async Task<Product> CreateAsync(Product product)
     {
-        throw new NotImplementedException();
+        _dbContext.Add(product);
+        await _dbContext.SaveChangesAsync();
+        return product;
     }
 
     public void DeleteAsync(Guid productId)
@@ -19,19 +25,21 @@ public class ProductRepository : IProductRepository
         throw new NotImplementedException();
     }
 
-    public Task<Product> GetByIdAsync(Guid guid)
+    public async Task<Product?> GetByIdAsync(Guid guid)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == guid);
     }
 
-    public Task<IEnumerable<Product>> GetAllAsync()
+    public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.Products.ToListAsync();
     }
 
-    public Task<Product> UpdateAsync(Product update)
+    public async Task<Product> UpdateAsync(Product product)
     {
-        throw new NotImplementedException();
+        _dbContext.Update(product);
+        await _dbContext.SaveChangesAsync();
+        return product;
     }
 }
 

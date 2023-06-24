@@ -1,4 +1,4 @@
-﻿using System;
+﻿using API.Dto;
 using API.Model;
 using API.Repositories;
 using Controllers;
@@ -38,6 +38,19 @@ public class ProductControllerTests
     }
 
     [Fact]
+    public async Task Create_WhenSuccessful_ShouldReturnOkAndProduct()
+    {
+        var product = new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 };
+
+        _mockProductRepository.Setup(x => x.CreateAsync(It.IsAny<Product>())).ReturnsAsync(product);
+
+        var result = await _controller.Create(product);
+
+        Assert.IsType<CreatedAtActionResult>(result);
+        Assert.Equal(product, ((CreatedAtActionResult)result).Value);
+    }
+
+    [Fact]
     public async Task GetById_WhenNotFound_ShouldReturnNotFound()
     {
         _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>()));
@@ -61,13 +74,27 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task Create_WhenSuccessful_ShouldReturnOkAndProduct()
+    public async Task Update_WhenNotFound_ShouldReturnBadRequest()
     {
-        var product = new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 };
+        var productUpdateDto = new ProductUpdateDto { Name = "Test Name", Description = "Test Description", Price = 5 };
 
-        _mockProductRepository.Setup(x => x.CreateAsync(It.IsAny<Product>())).ReturnsAsync(product);
+        _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>()));
 
-        var result = await _controller.Create(product);
+        var result = await _controller.Update(Guid.NewGuid(), productUpdateDto);
+
+        Assert.IsType<BadRequestResult>(result);
+    }
+
+    [Fact]
+    public async Task Update_WhenSuccessful_ShouldReturnOkAndProduct()
+    {
+        var productId = Guid.NewGuid();
+        var product = new Product { Id = productId, Name = "Test Name", Description = "Test Description", Price = 5 };
+        var productUpdateDto = new ProductUpdateDto { Name = "Test New Name", Description = "Test New Description", Price = 10 };
+
+        _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(product);
+
+        var result = await _controller.Update(productId, productUpdateDto);
 
         Assert.IsType<OkObjectResult>(result);
         Assert.Equal(product, ((OkObjectResult)result).Value);
