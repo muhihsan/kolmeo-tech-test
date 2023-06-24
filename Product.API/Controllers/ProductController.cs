@@ -37,5 +37,14 @@ public class ProductController : ControllerBase
 
         return Ok(product);
     }
+
+    [HttpPost]
+    [Route("")]
+    public async Task<ActionResult> Create([FromBody] Product product)
+    {
+        var result = await _productRepository.CreateAsync(product);
+
+        return Ok(result);
+    }
 }
 

@@ -59,6 +59,19 @@ namespace UnitTests.Controllers
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal(product, ((OkObjectResult)result).Value);
         }
+
+        [Fact]
+        public async Task Create_WhenSuccessful_ShouldReturnOkAndProduct()
+        {
+            var product = new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 };
+
+            _mockProductRepository.Setup(x => x.CreateAsync(It.IsAny<Product>())).ReturnsAsync(product);
+
+            var result = await _controller.Create(product);
+
+            Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(product, ((OkObjectResult)result).Value);
+        }
     }
 }
 
