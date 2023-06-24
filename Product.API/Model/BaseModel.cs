@@ -1,10 +1,8 @@
-﻿namespace API.Model
+﻿namespace API.Model;
+
+public class BaseModel
 {
-	public class BaseModel
-    {
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        // We can also add other fields like CreatedDate, UpdatedDate here
-    }
+    // We can also add other fields like CreatedDate, UpdatedDate here
 }
-
