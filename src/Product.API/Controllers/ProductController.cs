@@ -48,6 +48,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<ProductDto>> Create([FromBody] ProductDto product)
     {
+        // TODO: Refactor to use ActionFilterAttribute to avoid duplications on multiple controller actions
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -91,6 +92,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<ProductDto>> Update(Guid id, [FromBody] ProductUpdateDto productDto)
     {
+        // TODO: Refactor to use ActionFilterAttribute to avoid duplications on multiple controller actions
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
