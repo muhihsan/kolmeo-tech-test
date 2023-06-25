@@ -45,7 +45,7 @@ public class ProductController : ControllerBase
     [HttpPost]
     [Route("")]
     [ProducesResponseType(typeof(ProductDto), (int)HttpStatusCode.Created)]
-    [ProducesResponseType(typeof(ModelStateDictionary), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<ProductDto>> Create([FromBody] ProductDto product)
     {
         if (!ModelState.IsValid)
@@ -87,7 +87,7 @@ public class ProductController : ControllerBase
     [HttpPut]
     [Route("{id}")]
     [ProducesResponseType(typeof(ProductDto), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(ModelStateDictionary), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<ProductDto>> Update(Guid id, [FromBody] ProductUpdateDto productDto)
     {
