@@ -30,9 +30,12 @@ public class ProductRepository : IProductRepository
         return await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == guid);
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync()
+    public async Task<IEnumerable<Product>> GetAllAsync(int pageSize = 10, int pageIndex = 0)
     {
-        return await _dbContext.Products.ToListAsync();
+        return await _dbContext.Products
+            .Skip(pageSize * pageIndex)
+            .Take(pageSize)
+            .ToListAsync();
     }
 
     public async Task<Product> UpdateAsync(Product product)
@@ -40,6 +43,11 @@ public class ProductRepository : IProductRepository
         _dbContext.Update(product);
         await _dbContext.SaveChangesAsync();
         return product;
+    }
+
+    public async Task<long> Count()
+    {
+        return await _dbContext.Products.LongCountAsync();
     }
 }
 

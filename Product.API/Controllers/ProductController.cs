@@ -1,6 +1,7 @@
 ﻿using API.Dto;
 using API.Model;
 using API.Repositories;
+using API.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Controllers;
@@ -20,14 +21,17 @@ public class ProductController : ControllerBase
 
     [HttpGet]
     [Route("")]
-    public async Task<ActionResult> GetAll()
+    public async Task<ActionResult<PaginatedItemsViewModel<Product>>> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
     {
-        return Ok(await _productRepository.GetAllAsync());
+        var counts = await _productRepository.Count();
+        var products = await _productRepository.GetAllAsync(pageSize, pageIndex);
+
+        return Ok(new PaginatedItemsViewModel<Product>(pageSize, pageIndex, counts, products));
     }
 
     [HttpPost]
     [Route("")]
-    public async Task<ActionResult> Create([FromBody] Product product)
+    public async Task<ActionResult<Product>> Create([FromBody] Product product)
     {
         var result = await _productRepository.CreateAsync(product);
 
@@ -36,7 +40,7 @@ public class ProductController : ControllerBase
 
     [HttpGet]
     [Route("{id}")]
-    public async Task<ActionResult> GetById(Guid id)
+    public async Task<ActionResult<Product>> GetById(Guid id)
     {
         var product = await _productRepository.GetByIdAsync(id);
 
@@ -50,7 +54,7 @@ public class ProductController : ControllerBase
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<ActionResult> Update(Guid id, [FromBody] ProductUpdateDto productDto)
+    public async Task<ActionResult<Product>> Update(Guid id, [FromBody] ProductUpdateDto productDto)
     {
         var product = await _productRepository.GetByIdAsync(id);
 
