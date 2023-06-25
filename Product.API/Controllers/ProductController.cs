@@ -4,6 +4,7 @@ using API.Model;
 using API.Repositories;
 using API.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Controllers;
 
@@ -28,6 +29,7 @@ public class ProductController : ControllerBase
     {
         if (pageSize < 1 || pageIndex < 0)
         {
+            // TODO: Return the reason
             return BadRequest();
         }
 
@@ -40,8 +42,14 @@ public class ProductController : ControllerBase
     [HttpPost]
     [Route("")]
     [ProducesResponseType(typeof(Product), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(ModelStateDictionary), (int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<Product>> Create([FromBody] Product product)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var result = await _productRepository.CreateAsync(product);
 
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
@@ -66,9 +74,15 @@ public class ProductController : ControllerBase
     [HttpPut]
     [Route("{id}")]
     [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ModelStateDictionary), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<Product>> Update(Guid id, [FromBody] ProductUpdateDto productDto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var product = await _productRepository.GetByIdAsync(id);
 
         if (product == null)
