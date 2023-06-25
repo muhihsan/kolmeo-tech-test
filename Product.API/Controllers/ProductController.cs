@@ -66,14 +66,14 @@ public class ProductController : ControllerBase
     [HttpPut]
     [Route("{id}")]
     [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<Product>> Update(Guid id, [FromBody] ProductUpdateDto productDto)
     {
         var product = await _productRepository.GetByIdAsync(id);
 
         if (product == null)
         {
-            return BadRequest();
+            return NotFound();
         }
 
         product.Name = productDto.Name;
@@ -83,5 +83,23 @@ public class ProductController : ControllerBase
         await _productRepository.UpdateAsync(product);
 
         return Ok(product);
+    }
+
+    [HttpDelete]
+    [Route("{id}")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        await _productRepository.DeleteAsync(product);
+
+        return NoContent();
     }
 }

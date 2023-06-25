@@ -112,7 +112,7 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task Update_WhenNotFound_ShouldReturnBadRequest()
+    public async Task Update_WhenNotFound_ShouldReturnNotFound()
     {
         var productUpdateDto = new ProductUpdateDto("Test Name", "Test Description", 5);
 
@@ -120,7 +120,7 @@ public class ProductControllerTests
 
         var result = await _controller.Update(Guid.NewGuid(), productUpdateDto);
 
-        Assert.IsType<BadRequestResult>(result.Result);
+        Assert.IsType<NotFoundResult>(result.Result);
     }
 
     [Fact]
@@ -136,6 +136,30 @@ public class ProductControllerTests
 
         Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expectedProduct, ((OkObjectResult)result.Result).Value);
+    }
+
+    [Fact]
+    public async Task Delete_WhenNotFound_ShouldReturnNotFound()
+    {
+        _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>()));
+
+        var result = await _controller.Delete(Guid.NewGuid());
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task Delete_WhenSuccessful_ShouldReturnNoContent()
+    {
+        var productId = Guid.NewGuid();
+        var product = new Product { Id = productId, Name = "Test Name", Description = "Test Description", Price = 5 };
+
+        _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(product);
+        _mockProductRepository.Setup(x => x.DeleteAsync(It.IsAny<Product>()));
+
+        var result = await _controller.Delete(productId);
+
+        Assert.IsType<NoContentResult>(result);
     }
 }
 

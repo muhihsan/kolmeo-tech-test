@@ -20,9 +20,10 @@ public class ProductRepository : IProductRepository
         return product;
     }
 
-    public void DeleteAsync(Guid productId)
+    public async Task DeleteAsync(Product product)
     {
-        throw new NotImplementedException();
+        _dbContext.Products.Remove(product);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<Product?> GetByIdAsync(Guid guid)
