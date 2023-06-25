@@ -41,5 +41,8 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
+// TODO: Write/add middleware to log unexpected error
+// TODO: Write/add middleware to retrieve correlationId from the request
+
 app.Run();
 

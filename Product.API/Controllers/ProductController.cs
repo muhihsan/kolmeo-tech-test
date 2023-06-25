@@ -23,9 +23,9 @@ public class ProductController : ControllerBase
 
     [HttpGet]
     [Route("")]
-    [ProducesResponseType(typeof(PaginatedItemsViewModel<Product>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PaginatedItemsViewModel<ProductDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult<PaginatedItemsViewModel<Product>>> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
+    public async Task<ActionResult<PaginatedItemsViewModel<ProductDto>>> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
     {
         if (pageSize < 1 || pageIndex < 0)
         {
@@ -36,30 +36,42 @@ public class ProductController : ControllerBase
         var counts = await _productRepository.Count();
         var products = await _productRepository.GetAllAsync(pageSize, pageIndex);
 
-        return Ok(new PaginatedItemsViewModel<Product>(pageSize, pageIndex, counts, products));
+        // TODO: Use Automapper
+        var productsDto = products.Select(product => new ProductDto(product));
+
+        return Ok(new PaginatedItemsViewModel<ProductDto>(pageSize, pageIndex, counts, productsDto));
     }
 
     [HttpPost]
     [Route("")]
-    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(ProductDto), (int)HttpStatusCode.Created)]
     [ProducesResponseType(typeof(ModelStateDictionary), (int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult<Product>> Create([FromBody] Product product)
+    public async Task<ActionResult<ProductDto>> Create([FromBody] ProductDto product)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var result = await _productRepository.CreateAsync(product);
+        // TODO: Use Automapper
+        var result = await _productRepository.CreateAsync(
+            new Product
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price
+            });
 
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        // TODO: Use Automapper
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ProductDto(result));
     }
 
     [HttpGet]
     [Route("{id}")]
-    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ProductDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<Product>> GetById(Guid id)
+    public async Task<ActionResult<ProductDto>> GetById(Guid id)
     {
         var product = await _productRepository.GetByIdAsync(id);
 
@@ -68,15 +80,16 @@ public class ProductController : ControllerBase
             return NotFound();
         }
 
-        return Ok(product);
+        // TODO: Use Automapper
+        return Ok(new ProductDto(product));
     }
 
     [HttpPut]
     [Route("{id}")]
-    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ProductDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(ModelStateDictionary), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<Product>> Update(Guid id, [FromBody] ProductUpdateDto productDto)
+    public async Task<ActionResult<ProductDto>> Update(Guid id, [FromBody] ProductUpdateDto productDto)
     {
         if (!ModelState.IsValid)
         {
@@ -96,7 +109,7 @@ public class ProductController : ControllerBase
 
         await _productRepository.UpdateAsync(product);
 
-        return Ok(product);
+        return Ok(new ProductDto(product));
     }
 
     [HttpDelete]

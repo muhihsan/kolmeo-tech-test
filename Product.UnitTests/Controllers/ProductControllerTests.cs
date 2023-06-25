@@ -43,7 +43,8 @@ public class ProductControllerTests
         {
             new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 }
         };
-        var expectedResult = new PaginatedItemsViewModel<Product>(defaultPageSize, defaultPageIndex, count, products);
+        var expectedResult = new PaginatedItemsViewModel<ProductDto>(
+            defaultPageSize, defaultPageIndex, count, products.Select(product => new ProductDto(product)));
 
         _mockProductRepository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(products);
         _mockProductRepository.Setup(x => x.Count()).ReturnsAsync(5);
@@ -75,17 +76,20 @@ public class ProductControllerTests
         Assert.Equivalent(expectedResult, ((OkObjectResult)result.Result).Value);
     }
 
+    // TODO: Add test Create_WhenModelStateIsInvalid_ShouldReturnBadRequest
+
     [Fact]
     public async Task Create_WhenSuccessful_ShouldReturnOkAndProduct()
     {
-        var expectedProduct = new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 };
+        var product = new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 };
+        var productDto = new ProductDto(product);
 
-        _mockProductRepository.Setup(x => x.CreateAsync(It.IsAny<Product>())).ReturnsAsync(expectedProduct);
+        _mockProductRepository.Setup(x => x.CreateAsync(It.IsAny<Product>())).ReturnsAsync(product);
 
-        var result = await _controller.Create(expectedProduct);
+        var result = await _controller.Create(productDto);
 
         Assert.IsType<CreatedAtActionResult>(result.Result);
-        Assert.Equal(expectedProduct, ((CreatedAtActionResult)result.Result).Value);
+        Assert.Equivalent(productDto, ((CreatedAtActionResult)result.Result).Value);
     }
 
     [Fact]
@@ -101,15 +105,18 @@ public class ProductControllerTests
     [Fact]
     public async Task GetById_WhenSuccessful_ShouldReturnOkAndProduct()
     {
-        var expectedProduct = new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 };
+        var product = new Product { Id = Guid.NewGuid(), Name = "Test Name", Description = "Test Description", Price = 5 };
+        var expectedResult = new ProductDto(product);
 
-        _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(expectedProduct);
+        _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(product);
 
         var result = await _controller.GetById(Guid.NewGuid());
 
         Assert.IsType<OkObjectResult>(result.Result);
-        Assert.Equal(expectedProduct, ((OkObjectResult)result.Result).Value);
+        Assert.Equivalent(expectedResult, ((OkObjectResult)result.Result).Value);
     }
+
+    // TODO: Add test Update_WhenModelStateIsInvalid_ShouldReturnBadRequest
 
     [Fact]
     public async Task Update_WhenNotFound_ShouldReturnNotFound()
@@ -127,15 +134,22 @@ public class ProductControllerTests
     public async Task Update_WhenSuccessful_ShouldReturnOkAndProduct()
     {
         var productId = Guid.NewGuid();
-        var expectedProduct = new Product { Id = productId, Name = "Test Name", Description = "Test Description", Price = 5 };
+        var oldProduct = new Product { Id = productId, Name = "Test Name", Description = "Test Description", Price = 5 };
         var productUpdateDto = new ProductUpdateDto("Test New Name", "Test New Description", 10);
+        var expectedResult = new ProductDto
+        {
+            Id = productId,
+            Name = "Test New Name",
+            Description = "Test New Description",
+            Price = 10
+        };
 
-        _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(expectedProduct);
+        _mockProductRepository.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(oldProduct);
 
         var result = await _controller.Update(productId, productUpdateDto);
 
         Assert.IsType<OkObjectResult>(result.Result);
-        Assert.Equal(expectedProduct, ((OkObjectResult)result.Result).Value);
+        Assert.Equivalent(expectedResult, ((OkObjectResult)result.Result).Value);
     }
 
     [Fact]
