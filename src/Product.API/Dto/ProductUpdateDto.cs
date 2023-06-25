@@ -4,9 +4,9 @@ public class ProductUpdateDto
 {
     public string Name { get; }
     public string Description { get; }
-    public int Price { get; }
+    public decimal Price { get; }
 
-    public ProductUpdateDto(string name, string description, int price)
+    public ProductUpdateDto(string name, string description, decimal price)
     {
         Name = name;
         Description = description;
