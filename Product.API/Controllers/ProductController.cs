@@ -39,6 +39,7 @@ public class ProductController : ControllerBase
 
     [HttpPost]
     [Route("")]
+    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.Created)]
     public async Task<ActionResult<Product>> Create([FromBody] Product product)
     {
         var result = await _productRepository.CreateAsync(product);
@@ -48,6 +49,8 @@ public class ProductController : ControllerBase
 
     [HttpGet]
     [Route("{id}")]
+    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<Product>> GetById(Guid id)
     {
         var product = await _productRepository.GetByIdAsync(id);
@@ -62,6 +65,8 @@ public class ProductController : ControllerBase
 
     [HttpPut]
     [Route("{id}")]
+    [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<Product>> Update(Guid id, [FromBody] ProductUpdateDto productDto)
     {
         var product = await _productRepository.GetByIdAsync(id);
