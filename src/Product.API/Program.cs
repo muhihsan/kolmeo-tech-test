@@ -7,12 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services to the container
 builder.Services.AddControllers();
 
-builder.Services.AddValidatorsFromAssemblyContaining<ProductValidator>(); // register validators
-builder.Services.AddFluentValidationAutoValidation(); // the same old MVC pipeline behavior
+builder.Services.AddValidatorsFromAssemblyContaining<ProductValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -41,8 +40,23 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-// TODO: Write/add middleware to log unexpected error
-// TODO: Write/add middleware to retrieve correlationId from the request
+/* 
+ * TODO: Add error handler middleware
+ * This middleware can capture all errors ocurred on the app
+ * Some things that can be placed here
+ * - Logging all errors
+ * - Return standard error format
+*/
+
+/*
+ * TODO: Add some requests info to the logs
+ * Some of example:
+ * - X-Request-Id
+ * - Method
+ * - Route Name
+ * - URL
+ * - Latency
+*/
 
 app.Run();
 

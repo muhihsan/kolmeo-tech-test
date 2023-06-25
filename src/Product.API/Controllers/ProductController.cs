@@ -4,7 +4,6 @@ using API.Model;
 using API.Repositories;
 using API.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Controllers;
 
@@ -13,6 +12,7 @@ namespace Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
+    // TODO: Add logs
     private readonly ILogger<ProductController> _logger;
 
     public ProductController(IProductRepository productRepository, ILogger<ProductController> logger)
@@ -103,12 +103,14 @@ public class ProductController : ControllerBase
             return NotFound();
         }
 
+        // TODO: Use Automapper
         product.Name = productDto.Name;
         product.Description = productDto.Description;
         product.Price = productDto.Price;
 
         await _productRepository.UpdateAsync(product);
 
+        // TODO: Use Automapper
         return Ok(new ProductDto(product));
     }
 
