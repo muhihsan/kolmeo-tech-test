@@ -5,7 +5,7 @@ This repository contains a simple Product CRUD API.
 ## Getting Started
 
 ### Requirements
-- dotnet -> [Download dotnet](https://dotnet.microsoft.com/en-us/download)
+- dotnet 7.0 -> [Download dotnet](https://dotnet.microsoft.com/en-us/download)
 
 ### Build
 
