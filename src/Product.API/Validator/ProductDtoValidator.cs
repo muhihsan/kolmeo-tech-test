@@ -1,9 +1,9 @@
-﻿using API.Model;
+﻿using API.Dto;
 using FluentValidation;
 
 namespace API.Validator;
 
-public class ProductValidator : AbstractValidator<Product>
+public class ProductValidator : AbstractValidator<ProductDto>
 {
     public ProductValidator()
     {
