@@ -1,4 +1,5 @@
-﻿using API.Dto;
+﻿using System.Net;
+using API.Dto;
 using API.Model;
 using API.Repositories;
 using API.ViewModel;
@@ -21,8 +22,15 @@ public class ProductController : ControllerBase
 
     [HttpGet]
     [Route("")]
+    [ProducesResponseType(typeof(PaginatedItemsViewModel<Product>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<PaginatedItemsViewModel<Product>>> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
     {
+        if (pageSize < 1 || pageIndex < 0)
+        {
+            return BadRequest();
+        }
+
         var counts = await _productRepository.Count();
         var products = await _productRepository.GetAllAsync(pageSize, pageIndex);
 

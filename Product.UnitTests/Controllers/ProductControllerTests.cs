@@ -22,6 +22,17 @@ public class ProductControllerTests
         _controller = new ProductController(_mockProductRepository.Object, _mockLogger.Object);
     }
 
+    [Theory]
+    [InlineData(-1, 0)]
+    [InlineData(1, -1)]
+    [InlineData(0, 0)]
+    public async Task GetAll_WhenInvalidPageSizeOrPageIndexPassed_ShouldReturnBadRequest(int pageSize, int pageIndex)
+    {
+        var result = await _controller.GetAll(pageSize, pageIndex);
+
+        Assert.IsType<BadRequestResult>(result.Result);
+    }
+
     [Fact]
     public async Task GetAll_WhenNoPageSizeAndPageIndexPassed_ShouldReturnOkAndDefaultPaginatedProducts()
     {
